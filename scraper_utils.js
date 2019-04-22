@@ -11,5 +11,13 @@ async function clickButton(page, selector) {
         .evaluate((cssSelector) => {document.querySelector(cssSelector).click()}, selector);    
 }
 
+async function waitForAllXhrFinished(pendingXHR){
+    while(Number(pendingXHR.pendingXhrCount()) != 0) {
+        await pendingXHR.waitForAllXhrFinished();
+    }
+}
+
+
 module.exports.getTextByCssSelector = getTextByCssSelector;
 module.exports.clickButton = clickButton;
+module.exports.waitForAllXhrFinished = waitForAllXhrFinished;
