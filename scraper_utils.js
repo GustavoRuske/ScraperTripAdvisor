@@ -8,12 +8,16 @@ async function clickButton(page, selector) {
         .waitForSelector(selector);
     
     await page
-        .evaluate((cssSelector) => {document.querySelector(cssSelector).click()}, selector);    
+        .evaluate((cssSelector) => {document.querySelector(cssSelector).click()}, selector);
 }
 
-async function waitForAllXhrFinished(pendingXHR){
-    while(Number(pendingXHR.pendingXhrCount()) != 0) {
+async function waitForAllXhrFinished(pendingXHR) {
+    let pendingXhrCount = Number(pendingXHR.pendingXhrCount())
+    while( pendingXhrCount != 0) {
+        console.log(Number(pendingXHR.pendingXhrCount()))
         await pendingXHR.waitForAllXhrFinished();
+        pendingXhrCount = Number(pendingXHR.pendingXhrCount())
+        console.log(Number(pendingXHR.pendingXhrCount()))
     }
 }
 
