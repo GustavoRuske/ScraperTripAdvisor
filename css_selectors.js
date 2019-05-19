@@ -18,5 +18,10 @@ module.exports = {
         jun_ago: "#taplc_detail_filters_ar_responsive_0 > div > div.collapsible.is-shown-at-tablet > div > div.ui_columns.filters > div:nth-child(3) > div > div.content > div > div:nth-child(2) > label",
         set_nov: "#taplc_detail_filters_ar_responsive_0 > div > div.collapsible.is-shown-at-tablet > div > div.ui_columns.filters > div:nth-child(3) > div > div.content > div > div:nth-child(3) > label",
         dez_fev: "#taplc_detail_filters_ar_responsive_0 > div > div.collapsible.is-shown-at-tablet > div > div.ui_columns.filters > div:nth-child(3) > div > div.content > div > div:nth-child(4) > label"
+    },
+    ATTRACTION: {
+        name: "#HEADING",
+        city: "#taplc_trip_planner_breadcrumbs_0 > ul > li:nth-child(4) > a > span",
+        category: "#taplc_resp_attraction_header_ar_responsive_0 > div > div.ui_column.is-12-tablet.is-10-mobile.attractionsHeader > div > span > div"
     }
 };;
