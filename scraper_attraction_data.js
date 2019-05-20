@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const scraper_utils = require('./scraper_utils');
 const cssSelectors = require('./css_selectors');
-const database = require('./database');
+// const database = require('./database');
 const { PendingXHR } = require('pending-xhr-puppeteer');
 const attraction = {}
 attraction.reviews = []
@@ -13,11 +13,13 @@ async function scrape_data(urlPage) {
         for(traveler in cssSelectors.TRAVELERS_TYPE) {
             let browser = await puppeteer.launch({headless: true});
             let page = await browser.newPage();
-            // console.log(page)
             let pendingXHR = await new PendingXHR(page);
+
             await page.goto(urlPage);
-            await pendingXHR.waitForAllXhrFinished();
+            await pendingXHR.waitForAllXhrFinished(pendingXHR, page, cssSelectors.ATTRACTION.loading);
+
             await scrape_attractive_review(page, period, traveler)
+
             await browser.close();
         }
     }
@@ -31,7 +33,7 @@ async function scrape_attractive_review(page, period, traveler) {
     await scraper_utils.clickButton(page, cssSelectors.PERIOD[period]);
     await scraper_utils.clickButton(page, cssSelectors.TRAVELERS_TYPE[traveler]);
 
-    await scraper_utils.waitForAllXhrFinished(pendingXHR);
+    await scraper_utils.waitForAllXhrFinished(pendingXHR, page, cssSelectors.ATTRACTION.loading);
     await scrape_reviews(page, period, traveler)
 }
 
@@ -53,7 +55,7 @@ async function scrape_attraction_info(urlPage) {
     let pendingXHR = await new PendingXHR(page);
 
     await page.goto(urlPage);
-    await pendingXHR.waitForAllXhrFinished();
+    await pendingXHR.waitForAllXhrFinished(pendingXHR, page);
 
     for(selector in cssSelectors.ATTRACTION) {
         let content = String(await scraper_utils.getTextByCssSelector(page, cssSelectors.ATTRACTION[selector]))

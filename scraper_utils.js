@@ -11,16 +11,17 @@ async function clickButton(page, selector) {
         .evaluate((cssSelector) => {document.querySelector(cssSelector).click()}, selector);
 }
 
-async function waitForAllXhrFinished(pendingXHR) {
+async function waitForAllXhrFinished(pendingXHR, page, selector) {
     let pendingXhrCount = Number(pendingXHR.pendingXhrCount())
     while( pendingXhrCount != 0) {
-        console.log(Number(pendingXHR.pendingXhrCount()))
         await pendingXHR.waitForAllXhrFinished();
         pendingXhrCount = Number(pendingXHR.pendingXhrCount())
-        console.log(Number(pendingXHR.pendingXhrCount()))
+    }
+
+    if (selector) {
+        await page.waitForFunction("document.querySelector('"+selector+"').getAttribute('style') == 'display: none;'");
     }
 }
-
 
 module.exports.getTextByCssSelector = getTextByCssSelector;
 module.exports.clickButton = clickButton;
