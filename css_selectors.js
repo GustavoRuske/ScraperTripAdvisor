@@ -22,6 +22,7 @@ module.exports = {
     ATTRACTION: {
         name: "#HEADING",
         city: "#taplc_trip_planner_breadcrumbs_0 > ul > li:nth-child(4) > a > span",
-        category: "#taplc_resp_attraction_header_ar_responsive_0 > div > div.ui_column.is-12-tablet.is-10-mobile.attractionsHeader > div > span > div"
+        category: "#taplc_resp_attraction_header_ar_responsive_0 > div > div.ui_column.is-12-tablet.is-10-mobile.attractionsHeader > div > span > div",
+        loading: "#taplc_hotels_loading_box_ar_responsive_0"
     }
 };;
