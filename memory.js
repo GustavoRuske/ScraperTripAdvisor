@@ -24,4 +24,4 @@ async function memoryIdObject() {
     return memoryId
 }
 
-module.exports.memoryObject = memoryObject;
+module.exports.memoryIdObject = memoryIdObject;
