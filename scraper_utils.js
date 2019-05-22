@@ -12,12 +12,7 @@ async function clickButton(page, selector) {
 }
 
 async function waitForAllXhrFinished(pendingXHR, page, selector) {
-    let pendingXhrCount = Number(pendingXHR.pendingXhrCount())
-    while( pendingXhrCount != 0) {
-        await pendingXHR.waitForAllXhrFinished();
-        pendingXhrCount = Number(pendingXHR.pendingXhrCount())
-    }
-
+    if (Number(pendingXHR.pendingXhrCount()) != 0) await pendingXHR.waitForAllXhrFinished();
     if (selector) {
         await page.waitForFunction("document.querySelector('"+selector+"').getAttribute('style') == 'display: none;'");
     }
