@@ -39,6 +39,7 @@ async function scrape_attractive_review(page, period, traveler) {
 
 async function scrape_reviews(page, period, traveler) {
     let reviews = {};
+
     for(selector in cssSelectors.REVIEW_COUNT) {
         if(cssSelectors.REVIEW_COUNT.hasOwnProperty(selector)) {
             reviews[selector] = await scraper_utils.getTextByCssSelector(page, cssSelectors.REVIEW_COUNT[selector])
@@ -47,6 +48,7 @@ async function scrape_reviews(page, period, traveler) {
     reviews.period = period
     reviews.traveler = traveler
     attraction.reviews.push(reviews)
+    console.log(reviews)
 }
 
 async function scrape_attraction_info(urlPage) {
@@ -62,6 +64,8 @@ async function scrape_attraction_info(urlPage) {
         attraction[selector] = selector == "category" ? content.split(", ") : content
     }
     await browser.close();
+    console.log(attraction)
 }
 
-scrape_data('https://www.tripadvisor.com.br/Attraction_Review-g2344316-d3893494-Reviews-Parque_Aquatico_Cascaneia-Gaspar_State_of_Santa_Catarina.html')
+// scrape_data('https://www.tripadvisor.com.br/Attraction_Review-g2344316-d3893494-Reviews-Parque_Aquatico_Cascaneia-Gaspar_State_of_Santa_Catarina.html')
+scrape_data("https://www.tripadvisor.com.br/Attraction_Review-g680306-d8048445-Reviews-Passeio_San_Miguel-Balneario_Camboriu_State_of_Santa_Catarina.html")

@@ -1,5 +1,5 @@
-const {Client} = require('pg')
-const client = new Client({
+const {Pool} = require('pg')
+const pool = new Pool({
     user: "postgres",
     password: "123",
     host: "localhost",
@@ -11,16 +11,97 @@ const client = new Client({
 //     text: 'INSERT INTO public.attractive(city, name) VALUES($1, $2)',
 //     values: ['JOINVILLE', 'TESTE2'],
 // }
+async function createConnection() {
+    pool.connect()
+}
+async function endConnection() {
+    pool.end()
+}
 async function executeQuery(query) {
-    client.connect()
-    client.query(query, (err, res) => {
-        if (err) {
-          console.log(err.stack)
-        } else {
-          console.log(res.rows)
-        }
-        client.end()
-    })
+    try {
+        const res = await pool.query(query.text, query.values)
+        return res
+    } catch(err) {
+        console.log(err.stack)
+    }
+}
+
+async function findIdOrCreate(constSelect, constInsert) {
+    let queryResultSelect = await executeQuery(constSelect)
+
+    if(queryResultSelect.rows.length > 0) {
+        return queryResultSelect.rows[0].id
+    } else {
+        let queryResultInsert = await executeQuery(constInsert)
+        return queryResultInsert.rows[0].id
+    }
+}
+async function findIdOrCreateAttractive(name, city) {
+    let values =  [name, city]
+    let constSelect = {
+        text: "SELECT id FROM public.attractive WHERE name = $1 and city = $2",
+        values: values
+    }
+    let constInsert = {
+        text: "INSERT INTO public.attractive(name, city) VALUES ($1, $2) RETURNING id",
+        values: values
+    }
+
+    return findIdOrCreate(constSelect, constInsert)
+}
+
+async function findIdOrCreateTable(table, name) {//Category, period, traveller_type
+    let constSelect = {
+        text: "SELECT id FROM public." + table + " WHERE name = $1",
+        values: [name]
+    }
+    let constInsert = {
+        text: "INSERT INTO public." + table + "(name) VALUES ($1) RETURNING id",
+        values: [name]
+    }
+
+    return findIdOrCreate(constSelect, constInsert)
+}
+
+async function findIdOrCreateAttractiveCategory(attractive_id, category_name) {
+    let category_id = findIdOrCreateTable("category", category_name)
+
+    let constSelect = {
+        text: "SELECT id FROM public.attractive_category WHERE attractive_id = $1 and category_id = $2",
+        values: [attractive_id, category_id]
+    }
+    let constInsert = {
+        text: "INSERT INTO public.attractive_category(attractive_id, category_id) VALUES ($1, $2) RETURNING id",
+        values: [attractive_id, category_id]
+    }
+
+    return findIdOrCreate(constSelect, constInsert)
+}
+
+async function insertReview(review) {
+    let constInsert = {
+        text: "INSERT INTO public.review(attractive_id, period_id, travellers_type_id, review_total, review_excellent, review_very_good, review_reasonable, review_bad, review_horrible)"+
+        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        values: [review.attractive_id, 
+                review.period_id,
+                review.travellers_type_id,
+                review.review_total,
+                review.review_excellent,
+                review.review_very_good,
+                review.review_reasonable, 
+                review.review_bad, 
+                review.review_horrible
+            ]
+    }
+
+    let result = executeQuery(constInsert)
+    return result.rows
 }
 
 module.exports.executeQuery = executeQuery;
+module.exports.findIdOrCreateAttractive = findIdOrCreateAttractive;
+module.exports.findIdOrCreateTable = findIdOrCreateTable;
+module.exports.findIdOrCreateAttractiveCategory = findIdOrCreateAttractiveCategory;
+module.exports.insertReview = insertReview;
+module.exports.createConnection = createConnection;
+module.exports.endConnection = endConnection;
