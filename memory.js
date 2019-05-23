@@ -10,8 +10,6 @@ async function memoryIdObject() {
         }
     }
 
-    await db.createConnection()
-
     for (const selector in cssSelector.PERIOD) {
         memoryId.PERIOD[selector] = await db.findIdOrCreateTable("period", selector)
     }
@@ -19,8 +17,6 @@ async function memoryIdObject() {
     for (const selector in cssSelector.TRAVELERS_TYPE) {
         memoryId.TRAVELERS_TYPE[selector] = await db.findIdOrCreateTable("TRAVELLERS_TYPE", selector)
     }
-
-    await db.endConnection()
     return memoryId
 }
 

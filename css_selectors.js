@@ -24,5 +24,10 @@ module.exports = {
         city: "#taplc_trip_planner_breadcrumbs_0 > ul > li:nth-child(4) > a > span",
         category: "#taplc_resp_attraction_header_ar_responsive_0 > div > div.ui_column.is-12-tablet.is-10-mobile.attractionsHeader > div > span > div",
         loading: "#taplc_hotels_loading_box_ar_responsive_0"
-    }
+    },
+    MAIN_PAGE: {
+        xpath_first_filter_checkbox_hrefs: '//*[@id="taplc_attraction_filters_clarity_0"]/div[2]/div[2]//@href',
+        xpath_second_filter_checkbox_hrefs:'//*[@id="taplc_attraction_filters_clarity_0"]/div[3]/div[2]//div//@href',
+        xpath_url_attraction: '//*[@id="FILTERED_LIST"]//div[@class="attraction_element"]/div/div/div/div[2]/a/@href'
+        }
 };;

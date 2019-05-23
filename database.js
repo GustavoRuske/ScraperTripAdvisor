@@ -47,7 +47,7 @@ async function findIdOrCreateAttractive(name, city) {
         values: values
     }
 
-    return findIdOrCreate(constSelect, constInsert)
+    return await findIdOrCreate(constSelect, constInsert)
 }
 
 async function findIdOrCreateTable(table, name) {//Category, period, traveller_type
@@ -60,41 +60,41 @@ async function findIdOrCreateTable(table, name) {//Category, period, traveller_t
         values: [name]
     }
 
-    return findIdOrCreate(constSelect, constInsert)
+    return await findIdOrCreate(constSelect, constInsert)
 }
 
 async function findIdOrCreateAttractiveCategory(attractive_id, category_name) {
-    let category_id = findIdOrCreateTable("category", category_name)
+    let category_id = await findIdOrCreateTable("category", category_name)
 
     let constSelect = {
         text: "SELECT id FROM public.attractive_category WHERE attractive_id = $1 and category_id = $2",
-        values: [attractive_id, category_id]
+        values: [Number(attractive_id), Number(category_id)]
     }
     let constInsert = {
         text: "INSERT INTO public.attractive_category(attractive_id, category_id) VALUES ($1, $2) RETURNING id",
-        values: [attractive_id, category_id]
+        values: [Number(attractive_id), Number(category_id)]
     }
 
-    return findIdOrCreate(constSelect, constInsert)
+    return await findIdOrCreate(constSelect, constInsert)
 }
 
 async function insertReview(review) {
     let constInsert = {
         text: "INSERT INTO public.review(attractive_id, period_id, travellers_type_id, review_total, review_excellent, review_very_good, review_reasonable, review_bad, review_horrible)"+
         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        values: [review.attractive_id, 
-                review.period_id,
-                review.travellers_type_id,
-                review.review_total,
-                review.review_excellent,
-                review.review_very_good,
-                review.review_reasonable, 
-                review.review_bad, 
-                review.review_horrible
+        values: [Number(review.attractive), 
+                Number(review.period),
+                Number(review.traveler),
+                Number(review.total),
+                Number(review.excellent),
+                Number(review.very_good),
+                Number(review.reasonable), 
+                Number(review.bad), 
+                Number(review.horrible)
             ]
     }
 
-    let result = executeQuery(constInsert)
+    let result = await executeQuery(constInsert)
     return result.rows
 }
 
