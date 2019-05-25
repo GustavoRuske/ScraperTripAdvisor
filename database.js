@@ -122,7 +122,11 @@ async function returnUrlNotScraped() {
     }
 
     let result = await executeQuery(constSelect)
-    return result.rows[0].urlAttractive
+    if (result.rows.length > 0 ) {
+        return result.rows[0].urlAttractive
+    } else {
+        return ""
+    }
 }
 
 module.exports.executeQuery = executeQuery;
