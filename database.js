@@ -98,6 +98,33 @@ async function insertReview(review) {
     return result.rows
 }
 
+async function insertUrlQueue(url) {
+    let constInsert = {
+        text: 'INSERT INTO public.url("urlAttractive", scraped) VALUES ($1, $2)',
+        values: [url, false]
+    }
+
+    await executeQuery(constInsert)
+}
+
+async function updateToScraped(url) {
+    let constUpdate = {
+        text: 'UPDATE public.url SET scraped = true WHERE "urlAttractive" = $1',
+        values: [url]
+    }
+    await executeQuery(constUpdate)
+}
+
+async function returnUrlNotScraped() {
+    let constSelect = {
+        text: 'SELECT "urlAttractive" FROM public.url where scraped = false limit 1',
+        values: []
+    }
+
+    let result = await executeQuery(constSelect)
+    return result.rows[0].urlAttractive
+}
+
 module.exports.executeQuery = executeQuery;
 module.exports.findIdOrCreateAttractive = findIdOrCreateAttractive;
 module.exports.findIdOrCreateTable = findIdOrCreateTable;
@@ -105,3 +132,6 @@ module.exports.findIdOrCreateAttractiveCategory = findIdOrCreateAttractiveCatego
 module.exports.insertReview = insertReview;
 module.exports.createConnection = createConnection;
 module.exports.endConnection = endConnection;
+module.exports.insertUrlQueue = insertUrlQueue;
+module.exports.updateToScraped = updateToScraped;
+module.exports.returnUrlNotScraped = returnUrlNotScraped;
