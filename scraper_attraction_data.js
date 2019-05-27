@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const scraper_utils = require('./scraper_utils');
-const cssSelectors = require('./css_selectors');
-const attraction = {}
+const selectors = require('./css_selectors')
+let attraction = {}
 attraction.reviews = []
 
 async function scrape_data(urlPage) {
@@ -10,41 +10,42 @@ async function scrape_data(urlPage) {
         let page = await browser.newPage();
 
         await page.goto(urlPage);
+        let cssSelectors = selectors.A;
+        try {
+            await page.waitForSelector(cssSelectors.PERIOD.mar_may, { timeout: 6000 })
+        } catch (error) {
+            cssSelectors = selectors.B;
+        }
 
-        await scrape_attraction_info(page)
-
+        await scrape_attraction_info(page, cssSelectors)
+        console.log("Attraction inicio -> " + attraction.name)
         for(period in cssSelectors.PERIOD) {
-            await scraper_utils.clickButton(page, cssSelectors.PERIOD[period]);
+            await scraper_utils.clickButton(page, cssSelectors.PERIOD[period], cssSelectors.ATTRACTION.loading);
             for(traveler in cssSelectors.TRAVELERS_TYPE) {
-                await scraper_utils.clickButton(page, cssSelectors.TRAVELERS_TYPE[traveler]);
+                await scraper_utils.clickButton(page, cssSelectors.TRAVELERS_TYPE[traveler], cssSelectors.ATTRACTION.loading);
 
-                await scrape_attractive_review(page, period, traveler)
+                await scrape_reviews(page, period, traveler, cssSelectors)
 
-                await scraper_utils.clickButton(page, cssSelectors.TRAVELERS_TYPE[traveler]);
+                await scraper_utils.clickButton(page, cssSelectors.TRAVELERS_TYPE[traveler], cssSelectors.ATTRACTION.loading);
             }
-            await scraper_utils.clickButton(page, cssSelectors.PERIOD[period]);
+            await scraper_utils.clickButton(page, cssSelectors.PERIOD[period], cssSelectors.ATTRACTION.loading);
         }
 
         await browser.close();
         let attraction_return = attraction
+        console.log("Attraction scraped -> " + attraction.name)
         attraction = {}
         attraction.reviews = []
-
         return attraction_return
 
     } catch (error) {
-        console.log("erro ao buscar os dados na url: " + urlPage);
-        console.log("error: " + error);
-        await browser.close();
+        console.log("erro ao buscar os dados na url -> " + urlPage);
+        console.log("error -> " + error);
     }
 }
 
-async function scrape_attractive_review(page, period, traveler) {
-    await scraper_utils.waitForAllXhrFinished(page, true);
-    await scrape_reviews(page, period, traveler)
-}
-
-async function scrape_reviews(page, period, traveler) {
+async function scrape_reviews(page, period, traveler, cssSelectors) {
+    await scraper_utils.waitForAllXhrFinished(page, cssSelectors.ATTRACTION.loading);
     let reviews = {};
 
     for(selector in cssSelectors.REVIEW_COUNT) {
@@ -57,8 +58,14 @@ async function scrape_reviews(page, period, traveler) {
     attraction.reviews.push(reviews)
 }
 
-async function scrape_attraction_info(page) {
+async function scrape_attraction_info(page, cssSelectors) {
     for(selector in cssSelectors.ATTRACTION) {
+        if (selector == "category") {
+            try {
+                await page.waitForSelector(cssSelectors.UTILS.plusButton, { timeout: 6000 })
+                await scraper_utils.clickButton(page, cssSelectors.UTILS.plusButton)
+            } catch (error) {}
+        }
         let content = String(await scraper_utils.getTextByCssSelector(page, cssSelectors.ATTRACTION[selector]))
         attraction[selector] = selector == "category" ? content.split(", ") : content
     }

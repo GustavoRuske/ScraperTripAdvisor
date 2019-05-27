@@ -93,7 +93,6 @@ async function insertReview(review) {
                 Number(review.horrible)
             ]
     }
-
     let result = await executeQuery(constInsert)
     return result.rows
 }
