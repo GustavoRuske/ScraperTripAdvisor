@@ -82,15 +82,15 @@ async function insertReview(review) {
     let constInsert = {
         text: "INSERT INTO public.review(attractive_id, period_id, travellers_type_id, review_total, review_excellent, review_very_good, review_reasonable, review_bad, review_horrible)"+
         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        values: [Number(review.attractive), 
-                Number(review.period),
-                Number(review.traveler),
-                Number(review.total),
-                Number(review.excellent),
-                Number(review.very_good),
-                Number(review.reasonable), 
-                Number(review.bad), 
-                Number(review.horrible)
+        values: [BigInt(review.attractive),
+                BigInt(review.period.replace(".", "")),
+                BigInt(review.traveler.replace(".", "")),
+                BigInt(review.total),
+                BigInt(review.excellent.replace(".", "")),
+                BigInt(review.very_good.replace(".", "")),
+                BigInt(review.reasonable.replace(".", "")),
+                BigInt(review.bad.replace(".", "")),
+                BigInt(review.horrible.replace(".", ""))
             ]
     }
     let result = await executeQuery(constInsert)
@@ -128,6 +128,20 @@ async function returnUrlNotScraped() {
     }
 }
 
+async function returnAttractiveIfExists(name, city) {
+    let constSelect = {
+        text: 'SELECT name FROM public.attractive where name = $1 and city = $2',
+        values: [name, city]
+    }
+
+    let result = await executeQuery(constSelect)
+    if (result.rows.length > 0 ) {
+        return result.rows[0].name
+    } else {
+        return ""
+    }
+}
+
 module.exports.executeQuery = executeQuery;
 module.exports.findIdOrCreateAttractive = findIdOrCreateAttractive;
 module.exports.findIdOrCreateTable = findIdOrCreateTable;
@@ -138,3 +152,4 @@ module.exports.endConnection = endConnection;
 module.exports.insertUrlQueue = insertUrlQueue;
 module.exports.updateToScraped = updateToScraped;
 module.exports.returnUrlNotScraped = returnUrlNotScraped;
+module.exports.returnAttractiveIfExists = returnAttractiveIfExists;

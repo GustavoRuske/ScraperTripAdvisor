@@ -1,23 +1,35 @@
 const puppeteer = require('puppeteer');
 const scraper_utils = require('./scraper_utils');
 const selectors = require('./css_selectors')
+const db = require('./database');
 let attraction = {}
 attraction.reviews = []
 
 async function scrape_data(urlPage) {
+    let browser = await puppeteer.launch({headless: true});
+    let page = await browser.newPage();
     try {
-        let browser = await puppeteer.launch({headless: true});
-        let page = await browser.newPage();
 
         await page.goto(urlPage);
         let cssSelectors = selectors.A;
         try {
-            await page.waitForSelector(cssSelectors.PERIOD.mar_may, { timeout: 6000 })
+            await page.waitForSelector(cssSelectors.ATTRACTION.category, { timeout: 6000 })
         } catch (error) {
-            cssSelectors = selectors.B;
+            try {
+                cssSelectors = selectors.B;
+                await page.waitForSelector(cssSelectors.ATTRACTION.category, { timeout: 6000 })
+            } catch (error) {
+                cssSelectors = selectors.C;
+            }
+        }
+        // console.log(cssSelectors)
+
+        let attractive = await scrape_attraction_info(page, cssSelectors)
+
+        if (attractive) {
+            throw new Error('Atrativo ja inserido');
         }
 
-        await scrape_attraction_info(page, cssSelectors)
         console.log("Attraction inicio -> " + attraction.name)
         for(period in cssSelectors.PERIOD) {
             await scraper_utils.clickButton(page, cssSelectors.PERIOD[period], cssSelectors.ATTRACTION.loading);
@@ -39,6 +51,7 @@ async function scrape_data(urlPage) {
         return attraction_return
 
     } catch (error) {
+        await browser.close();
         console.log("erro ao buscar os dados na url -> " + urlPage);
         console.log("error -> " + error);
     }
@@ -66,8 +79,14 @@ async function scrape_attraction_info(page, cssSelectors) {
                 await scraper_utils.clickButton(page, cssSelectors.UTILS.plusButton)
             } catch (error) {}
         }
+        console.log("elemento >>> " + cssSelectors.ATTRACTION[selector])
         let content = String(await scraper_utils.getTextByCssSelector(page, cssSelectors.ATTRACTION[selector]))
         attraction[selector] = selector == "category" ? content.split(", ") : content
+    }
+
+    let attractive = await db.returnAttractiveIfExists(attraction.name, attraction.city)
+    if(attractive) {
+        return attractive
     }
 }
 

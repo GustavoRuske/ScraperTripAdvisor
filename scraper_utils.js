@@ -1,7 +1,6 @@
 const { PendingXHR } = require('pending-xhr-puppeteer');
 
 async function getTextByCssSelector(page, selector) {
-    // console.log("selector -> " + selector)
     const element = await page.$(selector);
     return await (await element.getProperty('textContent')).jsonValue();
 }
