@@ -25,7 +25,7 @@ async function serializeAndInsertOnDb(dataJson) {
 
 async function sumTotalReview(review) {
     let total = 0
-    total = Number(review.excellent) + Number(review.very_good) + Number(review.reasonable) + Number(review.bad) + Number(review.horrible)
+    total = Number(review.excellent.replace(".", "")) + Number(review.very_good.replace(".", "")) + Number(review.reasonable.replace(".", "")) + Number(review.bad.replace(".", "")) + Number(review.horrible.replace(".", ""))
     return total
 }
 

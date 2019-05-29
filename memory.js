@@ -1,5 +1,5 @@
 const db = require('./database');
-const cssSelector = require('./css_selectors');
+const cssSelector = require('./css_selectors').A;
 
 async function memoryIdObject() {
 

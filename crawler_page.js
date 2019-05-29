@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer')
-const cssSelectors = require('./css_selectors')
+const cssSelectors = require('./css_selectors').A;
 const db = require('./database')
 
 async function main() {
@@ -36,4 +36,4 @@ async function getAllUrl(page, cssSelector) {
     return urls
 }
 
-main()
+// main()
